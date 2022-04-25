@@ -3,6 +3,7 @@ package com.myapplication.kalkulatorarip;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import org.mariuszgromada.math.mxparser.*;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.EditText;
@@ -21,31 +22,33 @@ public class MainActivity extends AppCompatActivity {
 
         display.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if (getString(R.string.display).equals(display.getText().toString()))
-                    display.setText("");
+            public void onClick(View v) {
+                if ("Masukkan angka".equals(display.getText().toString())) {
+                display.setText("");
+                }
             }
         });
 
     }
 
-    private void updateText(String  strToAdd) {
+    private void updateText(String strToAdd) {
         String oldStr = display.getText().toString();
         int cursorPos = display.getSelectionStart();
         String leftStr = oldStr.substring(0, cursorPos);
         String rightStr = oldStr.substring(cursorPos);
-        if (getString(R.string.display).equals(display.getText().toString()))
+        if (getString(R.string.display).equals(display.getText().toString()));{
             display.setText(strToAdd);
         }
-        else{
-            display.setText(String.format("%$%$%$", leftStr, strToAdd, rightStr));
+        else {
+            display.setText(String.format("%s%s%s", leftStr, strToAdd, rightStr));
             display.setSelection(cursorPos + 1);
-        }
+    }
 
+    }
 
 
     public void zeroBTN(View view) {
-    updateText("0");
+        updateText("0");
     }
 
     public void oneBTN(View view) {
@@ -99,34 +102,43 @@ public class MainActivity extends AppCompatActivity {
     public void addBTN(View view) {
         updateText("+");
     }
+
     public void clearBTN(View view) {
         display.setText("");
     }
 
     public void parBTN(View view) {
-       int cursorPos = display.getSelectionStart();
-       int openPar = 0;
-       int closedPar = 0;
-       int textLen = display.getText().length();
+        int cursorPos = display.getSelectionStart();
+        int openPar = 0;
+        int closedPar = 0;
+        int textLen = display.getText().length();
 
-       for (int i = 0; i < cursorPos; i++) {
-           if (display.getText().toString().substring(i, i+1).equals("(")){
-               openPar += 1;
-           }
-           if (display.getText().toString().substring(i, i+1).equals(")")) {
-               closedPar += 1;
-           }
-       }
-
-       if (openPar == closedPar || display.getText().toString().substring(textLen-1, textLen).equals("("))
-        updateText("(");
-        display.setSelection(cursorPos + 1);
-       }
-        if (closedPar <  openPar && !display.getText().toString().substring(textLen-1, textLen).equals(")"))
-            updateText(")");
+        for (int i = 0; i < cursorPos; i++) {
+            if (display.getText().toString().substring(i, i+1)).equals("(")) {
+                openPar += 1;
+            }
+            if (display.getText().toString().substring(i, i+1)).equals(")")) {
+                closedPar += 1;
+            }
         }
+        if (openPar == closedPar || display.getText().toString().substring(textLen-1, textLen).equals("(")) {
+            updateText("(");
             display.setSelection(cursorPos + 1);
-}
+        }
+        else if (closedPar < openPar && !display.getText().toString().substring(textLen-1, textLen).equals("(")) {
+            updateText(")");
+    }
+            display.setSelection(cursorPos + 1);
+    }
+    public void equalBTN(View view) {
+    }
+
+    public void decimalBTN(View view) {
+    }
+
+    public void backspaceBTN(View view) {
+
+    }
 
     public void expBTN(View view) {
         updateText("^");
@@ -141,7 +153,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void equalBTN(View view) {
+        String userExp = display.getText().toString();
 
+        userExp = userExp.replaceAll("÷", "/");
+        userExp = userExp.replaceAll("×", "*");
+
+        Expression exp = new Expression(userExp);
+
+        String result = String.valueOf(exp.calculate());
+
+        display.setText(result);
+        display.setSelection(result.length());
     }
 
     public void backspaceBTN(View view) {
